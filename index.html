@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skodu game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .sudoku-board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 2px;
+            margin: 20px auto;
+        }
+
+        .sudoku-board input {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Sudoku Game</h1>
+        <div id="sudoku-board" class="sudoku-board"></div>
+        <button id="solve-button">Solve</button>
+        <button id="reset-button">Reset</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const board = document.getElementById('sudoku-board');
+            const solveButton = document.getElementById('solve-button');
+            const resetButton = document.getElementById('reset-button');
+            let puzzle = [
+                [0, 1, 0, 0, 5],
+                [0, 0, 2, 0, 0],
+                [0, 0, 3, 0, 0],
+                [4, 0, 0, 0, 0],
+                [0, 0, 5, 0, 4],
+            ];
+            function generateBoard(border, puzzle){
+                for(let row=0; row<5; row++){
+                    for(let col=0; col<5; col++){
+                        let cells = document.createElement("input")
+                        cells.min = 1
+                        cells.max= 5
+                        cells.type = 'number'
+                        if(puzzle[row][col] !== 0){
+                          cells.value = puzzle[row][col] 
+                          cells.disabled = true
+                        }
+                        board.appendChild(cells)
+                    }
+                }
+            }
+
+            function solveSudoku(board, puzzle){
+                const cells = document.querySelectorAll('input')
+                const solved = puzzle.map(row => row.slice())
+                function isSafe(board, row,col,num){
+                    for(let x=0; x < 5; x++){
+                        if(board[row][x]==num || board[x][col]==num){
+                            return false
+                        }
+                    }
+                    return true
+                }
+
+                function solve(board){
+                    for(let row=0; row<5; row++){
+                        for(let col=0; col < 5; col++){
+                            if(board[row][col]== 0){
+                                for(let num=1; num <= 5; num++){
+                                    if(isSafe(border, row, col)){
+                                        board[row][col]= num;
+                                        if(solve(board)){
+                                            return true
+                                        }
+                                        board[row][col] = 0
+                                    }
+                                }
+                                return false
+                            }
+                        }
+                    }
+                    return true
+                }
+                if(solve(solved)){
+                    for(let i = 0; i < cells.length; i++){
+                        cells[i].value = solved[math.floor(i / 5)][i % 5];
+                    }
+                }else{
+                    alert('no solution found')
+                }
+            }
+
+            function resetSudoku(board, puzzle){
+                generateBoard(board, puzzle)
+            }
+            generateBoard(board, puzzle)
+
+            solveButton.addEventListener("click", ()=> solveSudoku(board, puzzle));
+            resetButton.addEventListener('click',()=> resetSudoku(board, puzzle));
+        })
+
+    </script>
+</body>
+
+</html>
